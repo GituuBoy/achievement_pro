@@ -1,31 +1,40 @@
 // src/screens/WelcomeScreen.test.tsx
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderWithProviders } from '../test/test-utils'; // Corrected import path
 import WelcomeScreen from './WelcomeScreen';
-import { describe, it, expect, vi } from 'vitest';
-
-// Mock the image import to prevent errors in the test environment
-vi.mock('/src/assets/images/welcome-hero.jpg', () => {
-  return {
-    default: 'test-file-stub',
-  };
-});
 
 describe('WelcomeScreen', () => {
-  it('renders the main headline', () => {
-    render(<WelcomeScreen />);
-
-    // Check if the heading text is in the document
-    const headline = screen.getByRole('heading', {
-      name: /Begin Your Achievement Journey/i
-    });
-    expect(headline).toBeInTheDocument();
+  it('renders without crashing', () => {
+    renderWithProviders(<WelcomeScreen />); // Use custom render function
+    expect(screen.getByTestId('welcome-screen')).toBeInTheDocument();
   });
 
-  it('renders the "Get Started" button', () => {
-    render(<WelcomeScreen />);
+  it('displays the hero image with gradient overlay', () => {
+    renderWithProviders(<WelcomeScreen />); // Use custom render function
+    const heroContainer = screen.getByTestId('welcome-screen').querySelector('header');
+    expect(heroContainer).toBeInTheDocument();
+    expect(heroContainer).toHaveClass('relative');
+  });
 
-    // Check if the button is in the document
-    const button = screen.getByRole('button', { name: /Get Started/i });
+  it('displays the main heading with responsive typography', () => {
+    renderWithProviders(<WelcomeScreen />); // Use custom render function
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveClass('text-3xl', 'md:text-4xl');
+    expect(heading).toHaveTextContent('Begin Your Achievement Journey');
+  });
+
+  it('displays the description text with responsive typography', () => {
+    renderWithProviders(<WelcomeScreen />); // Use custom render function
+    const description = screen.getByText('Turn your idea into a real-world, tangible project in just four weeks.');
+    expect(description).toBeInTheDocument();
+    expect(description).toHaveClass('text-base', 'md:text-lg');
+  });
+
+  it('displays the Get Started button with focus states', () => {
+    renderWithProviders(<WelcomeScreen />); // Use custom render function
+    const button = screen.getByRole('button', { name: /get started with achievement/i });
     expect(button).toBeInTheDocument();
+    expect(button).toHaveClass('focus:ring-2', 'focus:ring-offset-2');
   });
 });
